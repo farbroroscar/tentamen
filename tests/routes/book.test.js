@@ -74,8 +74,6 @@ describe('TESTS:', () => {
 			});
 		});
 
-
-
 		it('Should return an object with the requested titlebook', (done) => {
 
 			mock
@@ -136,8 +134,6 @@ describe('TESTS:', () => {
 
 });
 
-
-
 	describe('books.updateBook', ()  => { 
 
     it('Should be able to update a book', (done) => {
@@ -179,9 +175,4 @@ describe('TESTS:', () => {
 			});
 		});
 	});
-
-
-
-
-
 })
