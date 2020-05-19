@@ -27,29 +27,134 @@ afterEach( () => {
 	mock.verify();
 });
 
-	const expected = {
-		//...
-	}
+	const request = {
+		"ISBN": "978-0-321-87758-1",
+    "Title": "Essential C#5.0",
+    "Author": "Mark Michaelis",
+    "Price": 59.99,
+    "SellerEmail": "someone@someplace.com",
+    "Used": true,
+    "Location": {
+        "City": "Redmond",
+        "Street": "156TH AVE NE"
+    }
+}
+	
+  const expected = {
+    "ISBN": "978-0-321-87758-1",
+    "Title": "Essential C#5.0",
+    "Author": "Mark Michaelis",
+    "Price": 59.99,
+    "SellerEmail": "someone@someplace.com",
+    "Used": true,
+    "Location": {
+        "City": "Redmond",
+        "Street": "156TH AVE NE"
+    }
+}
 
-describe('books.get', ()  => {
 
-	it('Should return an array of all books', (done) => {
+describe('TESTS:', () => {
 
-		// Given (preconditions)
-		mock
-		.expects('find')
-		.chain('exec')
-		.resolves([expected]);
+	describe('books.getBooks', ()  => {
 
-		// When (someting happens)
-		agent
-		.get('/books')
-		.end((err,res) => {
-		// Then (something should happen)
-			expect(res.status).to.equal(200);
-			expect(res.body).to.eql([expected]);
-			done();
+		it('Should return an array of all books', (done) => {
+
+			mock
+			.expects('find')
+			.chain('exec')
+			.resolves([expected]);
+	
+			agent
+			.get('/books')
+			.end((err,res) => {
+				expect(res.status).to.equal(200);
+				expect(res.body).to.eql([expected]);
+				done();
+			});
 		});
 	});
 
-});
+	describe('books.showBook', ()  => {
+
+		it('Should return a book object', (done) => {
+
+			mock
+			.expects('find')
+			.withArgs({"ISBN": "978-0-321-87758-1"})
+			.chain('exec')
+			.resolves([expected]);
+	
+			agent
+			.get('/books/978-0-321-87758-1')
+			.end((err,res) => {
+
+				expect(res.status).to.equal(200);
+				expect(res.body).to.eql([expected]);
+				done();
+			});
+		});
+	});
+
+	describe('books.deleteBook', ()  => { 
+
+			it('Should be able to delete a book', (done) => {
+
+				mock
+				.expects('deleteOne')
+				.withArgs({"ISBN": "978-0-321-87758-1"})
+				.chain('exec')
+				.resolves(expected);
+
+				agent
+				.delete('/books/978-0-321-87758-1')
+				.send(request)
+				.end((err,res) => {
+					expect(res.status).to.eql(200);
+					done();
+				});
+			});
+		});
+
+	describe('books.updateBook', ()  => { 
+
+    it('Should be able to update a book', (done) => {
+
+      mock
+      .expects('findOneAndUpdate')
+      .withArgs({"ISBN": "978-0-321-87758-1"}, request)
+      .chain('exec')
+      .resolves({ n: 1, nModified: 1, ok: 1 });
+
+      agent
+			.put('/books/978-0-321-87758-1')
+      .send(request)
+      .end((err,res) => {
+        expect(res.status).to.eql(200);
+        done();
+      });
+    });
+  });
+
+
+	describe('books.createBook', ()  => {
+
+		it('Should be able to post one book', (done) => {
+	
+			mock
+			.expects('create')
+			.withArgs(request)
+			.chain('exec')
+			.resolves([expected]);
+	
+			agent
+			.post('/books')
+      .send(request)
+			.end((err,res) => {
+				expect(res.status).to.equal(201);
+				expect(res.body).to.eql([expected]);
+				done();
+			});
+		});
+	});
+})
