@@ -73,24 +73,43 @@ describe('TESTS:', () => {
 				done();
 			});
 		});
+
+
+
+		it('Should return an object with the requested titlebook', (done) => {
+
+			mock
+			.expects('findOne')
+			.chain('exec')
+			.resolves(expected);
+	
+			agent
+			.get('/books/Essential C#5.0')
+			.end((err,res) => {
+				expect(res.status).to.equal(200);
+				expect(res.body).to.eql(expected);
+				done();
+			});
+		});
 	});
+
 
 	describe('books.showBook', ()  => {
 
 		it('Should return a book object', (done) => {
 
 			mock
-			.expects('find')
+			.expects('findOne')
 			.withArgs({"ISBN": "978-0-321-87758-1"})
 			.chain('exec')
-			.resolves([expected]);
+			.resolves(expected);
 	
 			agent
 			.get('/books/978-0-321-87758-1')
 			.end((err,res) => {
 
 				expect(res.status).to.equal(200);
-				expect(res.body).to.eql([expected]);
+				expect(res.body).to.eql(expected);
 				done();
 			});
 		});
@@ -98,23 +117,26 @@ describe('TESTS:', () => {
 
 	describe('books.deleteBook', ()  => { 
 
-			it('Should be able to delete a book', (done) => {
+		it('Should be able to delete a book', (done) => {
 
-				mock
-				.expects('deleteOne')
-				.withArgs({"ISBN": "978-0-321-87758-1"})
-				.chain('exec')
-				.resolves(expected);
+			mock
+			.expects('deleteOne')
+			.withArgs({"ISBN": "978-0-321-87758-1"})
+			.chain('exec')
+			.resolves(expected);
 
-				agent
-				.delete('/books/978-0-321-87758-1')
-				.send(request)
-				.end((err,res) => {
-					expect(res.status).to.eql(200);
-					done();
-				});
+			agent
+			.delete('/books/978-0-321-87758-1')
+			.send(request)
+			.end((err,res) => {
+				expect(res.status).to.eql(200);
+				done();
 			});
 		});
+
+});
+
+
 
 	describe('books.updateBook', ()  => { 
 
@@ -157,4 +179,9 @@ describe('TESTS:', () => {
 			});
 		});
 	});
+
+
+
+
+
 })

@@ -1,11 +1,20 @@
 getBooks = (req, res, next) => {
-  req.models.Book.find().then((books) => {
+  if(req.params.Title){
+    req.models.Book.find({Title: req.body.title})
+    .then((book) =>  res.send(book))
+    .catch((error) => next(error))
+  }
+
+  else {
+    req.models.Book.find().then((books) => {
       return res.send(books);
     }).catch((error) => next(error))
+  }
 }
 
+
 showBook = (req, res, next) => {
-  req.models.Book.find({ISBN: req.params.ISBN})
+  req.models.Book.findOne({ISBN: req.params.ISBN})
   .then(book => res.send(book))
   .catch((error) => next(error))
 }
@@ -30,9 +39,9 @@ createBook = (req, res, next) => {
 }
 
 deleteBook = (req, res, next) => {
-  req.models.Book.deleteOne({ISBN: req.params.ISBN})
-  .then(info => res.send(info).status(200))
-  .catch((error) => next(error).status(204))
+    req.models.Book.deleteOne({ISBN: req.params.ISBN})
+    .then(deleted => res.send(deleted).status(200))
+    .catch(info => res.send(info).status(204))
 }
 
 updateBook = (req, res, next) => {
@@ -56,6 +65,7 @@ updateBook = (req, res, next) => {
 }
 
 
+
 module.exports = {
   getBooks,
   showBook,
@@ -63,5 +73,4 @@ module.exports = {
   updateBook,
   deleteBook
 }
-
 
